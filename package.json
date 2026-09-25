@@ -1,0 +1,12 @@
+{
+  "name": "skills-career-mapping",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "技能赛项职业映射的服务端领域基础",
+  "scripts": {
+    "test": "node --test",
+    "build": "node --check src/domain.js && node --check src/repository.js && node --check src/service.js && node --check src/cli.js",
+    "check:sample": "node src/cli.js validate data/sample.json"
+  }
+}
