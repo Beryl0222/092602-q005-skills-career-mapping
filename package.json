@@ -1,12 +1,13 @@
 {
   "name": "skills-career-mapping",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "type": "module",
-  "description": "技能赛项职业映射的服务端领域基础",
+  "description": "技能赛项职业映射证据库：来源版本、能力权重、利益回避、换版重算与可解释推荐",
   "scripts": {
     "test": "node --test",
-    "build": "node --check src/domain.js && node --check src/repository.js && node --check src/service.js && node --check src/cli.js",
-    "check:sample": "node src/cli.js validate data/sample.json"
+    "build": "for f in src/*.js; do node --check \"$f\" || exit 1; done",
+    "check:sample": "node src/cli.js validate data/sample.json",
+    "demo": "node src/cli.js demo"
   }
 }

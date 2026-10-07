@@ -1,0 +1,30 @@
+{
+  "名称": "职业映射证据库领域契约",
+  "模块": {
+    "catalog": "赛项版本、能力单元、岗位族谱（parent_job_id）、专业、专业-岗位多对多、地区需求半开窗口",
+    "sources": "三类行业来源 competition_standard / enterprise_survey / recruitment_data，含 source_no、version、summary、可信期 [effective_from, expires_at)",
+    "governance": "统计周期、权重提案与审批、(period_id, source_id) 唯一贡献、企业利益关系拦截与回避留痕、岗位-能力映射重算",
+    "standards": "标准版本登记与换版；只重算受影响映射；旧来源可信期截断退役；在读学生计划标记 needs_reevaluation",
+    "students": "课程达成 append-only（同一 student|course|unit 唯一、只可前进）；学生计划只增列不回退",
+    "importer": "按 source_no+version+summary 的 SHA-256 指纹去重；编号+版本相同而摘要变化进复核，accept/reject 留痕，批次可安全重跑",
+    "recommender": "推荐运行按专业分片 pending/completed/blocked；配额按 (run,shard) 幂等预留；resume 从未完成分片继续；add/remove/keep/hold，disputed 只进 hold",
+    "explanations": "explainMajor（增减理由、证据时点与可信窗口、采用标准版本、回避意见、地区窗口）、plansNeedingReevaluation、explainPlan"
+  },
+  "关键不变量": [
+    "可信期一律为半开区间 [effective_from, expires_at)，相邻版本端点相接不重叠",
+    "同一 source_no 的不同版本窗口不得重叠",
+    "同一条来源在一个统计周期最多形成一条权重贡献",
+    "与来源企业存在利益关系的代表既不能批准也不能驳回对应提案，需登记回避",
+    "include 与 exclude 同期并存时映射为 disputed，推荐只给 hold",
+    "标准换版只重算受影响映射，其余映射 computed_at 不变",
+    "课程达成事实只能追加，重复登记拒绝；任何重算/换版不得删除或降级",
+    "批量导入以内容指纹判重；编号相同内容变化必须经复核 accept 才能入库（旧行截断退役）",
+    "推荐分片重放不重复扣费，配额按分片键预留；中断 resume 只处理未完成分片"
+  ],
+  "推荐动作语义": {
+    "add": "基线未覆盖，且观察时点有在可信期内、净权重为正的证据",
+    "remove": "基线已覆盖，但观察时点没有任何在窗证据，或净权重不再为正",
+    "keep": "基线覆盖且证据支持，维持",
+    "hold": "证据互斥(disputed)、超窗、缺失或不足，不做静默增减"
+  }
+}
